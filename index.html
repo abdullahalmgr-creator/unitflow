@@ -1,0 +1,227 @@
+<h1 style="text-align:center; font-family:'Segoe UI', Arial, sans-serif;
+background: linear-gradient(90deg, #6dd5fa, #2980b9);
+-webkit-background-clip: text;
+color: transparent;
+font-size: 40px; margin-bottom: 20px;">
+UnitFlow
+</h1>
+
+<style>
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f4f8fb;
+}
+
+.converter-box {
+  border-radius: 16px;
+  padding: 25px;
+  margin: 20px auto;
+  max-width: 420px;
+  background: linear-gradient(135deg, #6dd5fa, #2980b9);
+  color: white;
+  box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
+  transition: 0.3s;
+}
+
+.converter-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+}
+
+.converter-box h3 {
+  font-size: 20px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.converter-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.converter-row label {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.converter-row input, .converter-row select {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 6px;
+  outline: none;
+}
+
+.converter-row input:focus, .converter-row select:focus {
+  box-shadow: 0px 0px 6px rgba(255,255,255,0.8);
+}
+
+.copy-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background-color: #ffcf33;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 5px;
+}
+.copy-btn:hover {
+  background-color: #ffd633;
+}
+
+/* Floating copy message */
+#copyMessage {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ffcf33;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 10px;
+  display: none;
+  font-weight: bold;
+  z-index: 9999;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+}
+</style>
+
+<div id="copyMessage">Copied!</div>
+
+<div class="converter-box">
+  <h3>UnitFlow – Quick Converter</h3>
+  
+  <div class="converter-row">
+    <label>Enter Value:</label>
+    <input type="number" id="inputValue" placeholder="Enter number" oninput="convertUnit()">
+  </div>
+  
+  <div class="converter-row">
+    <label>From Unit:</label>
+    <select id="fromUnit" onchange="convertUnit()">
+      <optgroup label="Length">
+        <option value="cm">Centimeters (cm)</option>
+        <option value="m">Meters (m)</option>
+        <option value="inch">Inches (in)</option>
+        <option value="ft">Feet (ft)</option>
+      </optgroup>
+      <optgroup label="Weight">
+        <option value="kg">Kilograms (kg)</option>
+        <option value="lb">Pounds (lb)</option>
+        <option value="g">Grams (g)</option>
+      </optgroup>
+      <optgroup label="Temperature">
+        <option value="c">Celsius (°C)</option>
+        <option value="f">Fahrenheit (°F)</option>
+        <option value="k">Kelvin (K)</option>
+      </optgroup>
+    </select>
+  </div>
+  
+  <div class="converter-row">
+    <label>To Unit:</label>
+    <select id="toUnit" onchange="convertUnit()">
+      <optgroup label="Length">
+        <option value="cm">Centimeters (cm)</option>
+        <option value="m">Meters (m)</option>
+        <option value="inch">Inches (in)</option>
+        <option value="ft">Feet (ft)</option>
+      </optgroup>
+      <optgroup label="Weight">
+        <option value="kg">Kilograms (kg)</option>
+        <option value="lb">Pounds (lb)</option>
+        <option value="g">Grams (g)</option>
+      </optgroup>
+      <optgroup label="Temperature">
+        <option value="c">Celsius (°C)</option>
+        <option value="f">Fahrenheit (°F)</option>
+        <option value="k">Kelvin (K)</option>
+      </optgroup>
+    </select>
+  </div>
+  
+  <div class="converter-row">
+    <label>Result:</label>
+    <input type="text" id="resultValue" readonly>
+    <button class="copy-btn" onclick="copyValue('resultValue')">Copy Result</button>
+  </div>
+</div>
+
+<script>
+function convertUnit() {
+  let value = parseFloat(document.getElementById('inputValue').value);
+  if(isNaN(value)){ document.getElementById('resultValue').value=""; return;}
+  let from = document.getElementById('fromUnit').value;
+  let to = document.getElementById('toUnit').value;
+  let result = value;
+
+  // Length
+  let lengthUnits = ['cm','m','inch','ft'];
+  if(lengthUnits.includes(from) && lengthUnits.includes(to)){
+    let cmValue = 0;
+    switch(from){
+      case 'cm': cmValue = value; break;
+      case 'm': cmValue = value*100; break;
+      case 'inch': cmValue = value*2.54; break;
+      case 'ft': cmValue = value*30.48; break;
+    }
+    switch(to){
+      case 'cm': result = cmValue; break;
+      case 'm': result = cmValue/100; break;
+      case 'inch': result = cmValue/2.54; break;
+      case 'ft': result = cmValue/30.48; break;
+    }
+  }
+
+  // Weight
+  let weightUnits = ['kg','lb','g'];
+  if(weightUnits.includes(from) && weightUnits.includes(to)){
+    let kgValue = 0;
+    switch(from){
+      case 'kg': kgValue=value; break;
+      case 'lb': kgValue=value/2.20462; break;
+      case 'g': kgValue=value/1000; break;
+    }
+    switch(to){
+      case 'kg': result=kgValue; break;
+      case 'lb': result=kgValue*2.20462; break;
+      case 'g': result=kgValue*1000; break;
+    }
+  }
+
+  // Temperature
+  let tempUnits = ['c','f','k'];
+  if(tempUnits.includes(from) && tempUnits.includes(to)){
+    let cValue=0;
+    switch(from){
+      case 'c': cValue=value; break;
+      case 'f': cValue=(value-32)*5/9; break;
+      case 'k': cValue=value-273.15; break;
+    }
+    switch(to){
+      case 'c': result=cValue; break;
+      case 'f': result=cValue*9/5+32; break;
+      case 'k': result=cValue+273.15; break;
+    }
+  }
+
+  document.getElementById('resultValue').value=result.toFixed(2);
+}
+
+// Copy Function
+function copyValue(id){
+  let value=document.getElementById(id).value;
+  if(value==="") return;
+  navigator.clipboard.writeText(value).then(()=>{
+    let msg=document.getElementById("copyMessage");
+    msg.textContent="Copied: "+value;
+    msg.style.display="block";
+    setTimeout(()=>{msg.style.display="none";},1500);
+  });
+}
+</script>
